@@ -1,11 +1,7 @@
-package org.cis1200.Minesweeper;
-
-import org.cis1200.Minesweeper.View;
+package org.cis1200.Gardensweeper;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class Run implements Runnable {
     public void run() {
@@ -21,12 +17,14 @@ public class Run implements Runnable {
         rulesArea.setLineWrap(true);
         rulesArea.setWrapStyleWord(true);
         rulesArea.setFont(font);
-        rulesArea.setText("  Hey there! Could you help me plant my garden? \n" +
-                "     ❀  Left click a field to plant a flower (reveal)\n" +
-                "     ❁  Right click any fields that are bunnies (flag)\n" +
-                "     ✿  Uncovered fields show how many bunnies live nearby\n" +
-                "     ❀  Help me plant my garden without bothering the bunnies\n" +
-                "   Thank you so much! ˚୨୧⋆｡˚ ⋆");
+        rulesArea.setText(
+                "  Hey there! Could you help me plant my garden? \n" +
+                        "     ❀  Left click a field to plant a flower (reveal)\n" +
+                        "     ❁  Right click any fields that are bunnies (flag)\n" +
+                        "     ✿  Uncovered fields show how many bunnies live nearby\n" +
+                        "     ❀  Help me plant my garden without bothering the bunnies\n" +
+                        "   Thank you so much! ˚୨୧⋆｡˚ ⋆"
+        );
         JScrollPane rulesAreaScrollPane = new JScrollPane(rulesArea);
         rules.add(rulesAreaScrollPane);
         rules.setSize(500, 150);

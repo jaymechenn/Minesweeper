@@ -1,4 +1,5 @@
-package org.cis1200.Minesweeper;
+
+package org.cis1200.Gardensweeper;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,29 +10,32 @@ public class MinesweeperTest {
     @BeforeEach
     public void setUp() {
         /*
-         Custom Board:
-         -1  0  0  0  0  0  0  0  0 -1
-          0 -1  0  0  0  0  0  0 -1  0
-          0  0 -1  0  0  0  0 -1  0  0
-          0  0  0 -1  0  0 -1  0  0  0
-          0  0  0  0 -1 -1  0  0  0  0
-          0  0  0  0 -1 -1  0  0  0  0
-          0  0  0 -1  0  0 -1  0  0  0
-          0  0 -1  0  0  0  0 -1  0  0
-          0 -1  0  0  0  0  0  0 -1  0
-         -1  0  0  0  0  0  0  0  0 -1
+         * Test Board:
+         * -1 2 1 0 0 0 0 1 2 -1
+         * 2 -1 2 1 0 0 1 2 -1 2
+         * 1 2 -1 2 1 1 2 -1 2 1
+         * 0 1 2 -1 3 3 -1 2 1 0
+         * 0 0 1 3 -1 -1 3 1 0 0
+         * 0 0 1 3 -1 -1 3 1 0 0
+         * 0 1 2 -1 3 3 -1 2 1 0
+         * 1 2 -1 2 1 1 2 -1 2 1
+         * 2 -1 2 1 0 0 1 2 -1 2
+         * -1 2 1 0 0 0 0 1 2 -1
          */
-        int[][] testBoard = new int[10][10];
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                if (i == j || i == 9 - j) {
-                    testBoard[i][j] = -1;
-                }
-            }
-        }
+        int[][] testBoard = {
+            { -1, 2, 1, 0, 0, 0, 0, 1, 2, -1 },
+            { 2, -1, 2, 1, 0, 0, 1, 2, -1, 2 },
+            { 1, 2, -1, 2, 1, 1, 2, -1, 2, 1 },
+            { 0, 1, 2, -1, 3, 3, -1, 2, 1, 0 },
+            { 0, 0, 1, 3, -1, -1, 3, 1, 0, 0 },
+            { 0, 0, 1, 3, -1, -1, 3, 1, 0, 0 },
+            { 0, 1, 2, -1, 3, 3, -1, 2, 1, 0 },
+            { 1, 2, -1, 2, 1, 1, 2, -1, 2, 1 },
+            { 2, -1, 2, 1, 0, 0, 1, 2, -1, 2 },
+            { -1, 2, 1, 0, 0, 0, 0, 1, 2, -1 },
+        };
         model = new Model();
-        model.getBoard().setBoard(testBoard);
-        model.getBoard().populateBoard();
+        model.setBoard(testBoard);
         model.setFirstTurn(false);
     }
 
@@ -110,19 +114,18 @@ public class MinesweeperTest {
     @Test
     public void testGenerateMines() {
         model.reset();
-        model.generateMines(1, 1);
-        model.getBoard().populateBoard();
-        Board board = model.getBoard();
+        model.setUpBoard(1, 1);
+        int[][] board = model.getBoard();
         int mineCount = 0;
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                if (board.get(i,j) == -1) {
+                if (board[i][j] == -1) {
                     mineCount++;
                 }
             }
         }
         assertEquals(10, mineCount); // Adjust based on your mine generation logic
-        assertEquals(0, board.get(1,1));
+        assertEquals(0, board[1][1]);
     }
 
     public void testRevealEdgeCell() {
@@ -193,7 +196,7 @@ public class MinesweeperTest {
     public void testGameWinByRevealingAllNonMines() {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                if (model.getBoard().get(i,j) != -1) {
+                if (model.getBoard()[i][j] != -1) {
                     model.playTurn(i, j, true);
                 }
             }
@@ -232,17 +235,18 @@ public class MinesweeperTest {
     @Test
     public void testMineCountConsistencyAfterReset() {
         model.reset();
-        model.generateMines(5, 5);
-        model.getBoard().populateBoard();
+        model.setUpBoard(5, 5);
         int mineCount = 0;
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                if (model.getBoard().get(i,j) == -1) {
+                if (model.getBoard()[i][j] == -1) {
                     mineCount++;
                 }
             }
         }
-        assertEquals(10, mineCount, "Mine count should be consistent after reset and regeneration.");
+        assertEquals(
+                10, mineCount, "Mine count should be consistent after reset and regeneration."
+        );
     }
 
 }

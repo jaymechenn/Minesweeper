@@ -1,4 +1,5 @@
-package org.cis1200.Minesweeper;
+package org.cis1200.Gardensweeper;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -11,7 +12,7 @@ public class View extends JPanel {
     // variables to make game and track status (win/loss)
     private Model grid;
     private JLabel status;
-    boolean CtrlPressed = false;
+    boolean ctrlPressed = false;
     // constants
     public static final int WIDTH = 500;
     public static final int HEIGHT = 500;
@@ -35,11 +36,10 @@ public class View extends JPanel {
                 int row = p.y / 50;
                 int col = p.x / 50;
                 // right click -> flag
-                if (e.getButton() == MouseEvent.BUTTON3 || (CtrlPressed && e.getButton() == MouseEvent.BUTTON1)) {
+                if (e.getButton() == MouseEvent.BUTTON3
+                        || (ctrlPressed && e.getButton() == MouseEvent.BUTTON1)) {
                     grid.playFlag(row, col);
-                }
-                // left click -> uncover
-                else {
+                } else { // left click -> uncover
                     grid.playTurn(row, col, true);
                 }
                 // update states and display
@@ -53,12 +53,13 @@ public class View extends JPanel {
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
-                    CtrlPressed = true;
+                    ctrlPressed = true;
                 }
             }
+
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
-                    CtrlPressed = false;
+                    ctrlPressed = false;
                 }
             }
         });
@@ -89,15 +90,11 @@ public class View extends JPanel {
      */
     public void updateStatus() {
         // user wins -> display win message
-        if(grid.checkWinner()) {
+        if (grid.checkWinner()) {
             status.setText("ₓ˚. ୭ ˚○◦˚ What a beautiful garden! Thank you! ˚◦○˚ ୧ .˚ₓ");
-        }
-        // user loses -> display lose message
-        else if (!grid.getActive()) {
+        } else if (!grid.getActive()) { // user loses -> display lose message
             status.setText("Uh oh! That's a bunny. No worries, just restart or undo.");
-        }
-        // game not over -> display number of mines
-        else {
+        } else { // game not over -> display number of mines
             status.setText("⋆ ˚｡⋆୨୧˚ Bunnies: 10 ˚୨୧⋆｡˚ ⋆");
         }
     }
@@ -105,7 +102,9 @@ public class View extends JPanel {
     /**
      * get size of board for testing
      */
-    public Dimension getPreferredSize() { return new Dimension(WIDTH, HEIGHT); }
+    public Dimension getPreferredSize() {
+        return new Dimension(WIDTH, HEIGHT);
+    }
 
     /**
      * draw game board
@@ -116,53 +115,47 @@ public class View extends JPanel {
         Random random = new Random();
         g.setFont(new Font("Comic Sans MS", Font.PLAIN, 30));
         // draw grid
-        for (int i = 1; i <= size; i ++) {
+        for (int i = 1; i <= size; i++) {
             g.setColor(Color.WHITE);
-            g.drawLine(i*50, 0, i*50, HEIGHT);
-            g.drawLine(0, i*50, WIDTH, i*50);
+            g.drawLine(i * 50, 0, i * 50, HEIGHT);
+            g.drawLine(0, i * 50, WIDTH, i * 50);
         }
         // draw numbers
-        for (int row = 0; row < size; row ++) {
-            for (int col = 0; col < size; col ++) {
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
                 int state = grid.getTile(row, col);
                 // empty (no adjacent mines)
                 if (state == 0) {
                     int teehee = random.nextInt(3);
                     if (teehee == 0) {
-                        g.setColor(new Color(255,111,105));
-                        g.fillRect(col*50+1, row*50+1, 48, 48);
+                        g.setColor(new Color(255, 111, 105));
+                        g.fillRect(col * 50 + 1, row * 50 + 1, 48, 48);
                         g.setColor(Color.WHITE);
-                        g.drawString("❀", col*50+12, row*50+35);
+                        g.drawString("❀", col * 50 + 12, row * 50 + 35);
                     } else if (teehee == 1) {
-                        g.setColor(new Color(255,139,130));
-                        g.fillRect(col*50+1, row*50+1, 48, 48);
+                        g.setColor(new Color(255, 139, 130));
+                        g.fillRect(col * 50 + 1, row * 50 + 1, 48, 48);
                         g.setColor(Color.WHITE);
-                        g.drawString("❁", col*50+12, row*50+35);
+                        g.drawString("❁", col * 50 + 12, row * 50 + 35);
                     } else if (teehee == 2) {
-                        g.setColor(new Color(255,170,165));
-                        g.fillRect(col*50+1, row*50+1, 48, 48);
+                        g.setColor(new Color(255, 170, 165));
+                        g.fillRect(col * 50 + 1, row * 50 + 1, 48, 48);
                         g.setColor(Color.WHITE);
-                        g.drawString("✿", col*50+12, row*50+35);
+                        g.drawString("✿", col * 50 + 12, row * 50 + 35);
                     }
-                }
-                // number
-                else if (state > 0) {
-                    g.setColor(new Color(140,213,191));
-                    g.fillRect(col*50+1, row*50+1, 48, 48);
+                } else if (state > 0) { // number
+                    g.setColor(new Color(140, 213, 191));
+                    g.fillRect(col * 50 + 1, row * 50 + 1, 48, 48);
                     g.setColor(Color.WHITE);
-                    g.drawString(Integer.toString(state), col*50+17, row*50+35);
-                }
-                // flag
-                else if (state == -3) {
-                    g.setColor(new Color(255,111,105));
-                    g.drawString("❤", col*50+10, row*50+35);
-                }
-                // mine
-                else if (state == -1) {
+                    g.drawString(Integer.toString(state), col * 50 + 17, row * 50 + 35);
+                } else if (state == -3) { // flag
+                    g.setColor(new Color(255, 111, 105));
+                    g.drawString("❤", col * 50 + 10, row * 50 + 35);
+                } else if (state == -1) { // mine
                     g.setColor(Color.ORANGE);
-                    g.fillRect(col*50+1, row*50+1, 48, 48);
+                    g.fillRect(col * 50 + 1, row * 50 + 1, 48, 48);
                     g.setColor(Color.WHITE);
-                    g.drawString("\uD83D\uDC30", col*50+10, row*50+35);
+                    g.drawString("\uD83D\uDC30", col * 50 + 10, row * 50 + 35);
                 }
             }
         }
