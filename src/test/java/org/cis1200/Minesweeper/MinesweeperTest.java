@@ -30,8 +30,8 @@ public class MinesweeperTest {
             }
         }
         model = new Model();
-        model.setBoard(testBoard);
-        model.populateBoard();
+        model.getBoard().setBoard(testBoard);
+        model.getBoard().populateBoard();
         model.setFirstTurn(false);
     }
 
@@ -111,18 +111,18 @@ public class MinesweeperTest {
     public void testGenerateMines() {
         model.reset();
         model.generateMines(1, 1);
-        model.populateBoard();
-        int[][] board = model.getBoard();
+        model.getBoard().populateBoard();
+        Board board = model.getBoard();
         int mineCount = 0;
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                if (board[i][j] == -1) {
+                if (board.get(i,j) == -1) {
                     mineCount++;
                 }
             }
         }
         assertEquals(10, mineCount); // Adjust based on your mine generation logic
-        assertEquals(0, board[1][1]);
+        assertEquals(0, board.get(1,1));
     }
 
     public void testRevealEdgeCell() {
@@ -193,7 +193,7 @@ public class MinesweeperTest {
     public void testGameWinByRevealingAllNonMines() {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                if (model.getBoard()[i][j] != -1) {
+                if (model.getBoard().get(i,j) != -1) {
                     model.playTurn(i, j, true);
                 }
             }
@@ -233,11 +233,11 @@ public class MinesweeperTest {
     public void testMineCountConsistencyAfterReset() {
         model.reset();
         model.generateMines(5, 5);
-        model.populateBoard();
+        model.getBoard().populateBoard();
         int mineCount = 0;
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                if (model.getBoard()[i][j] == -1) {
+                if (model.getBoard().get(i,j) == -1) {
                     mineCount++;
                 }
             }

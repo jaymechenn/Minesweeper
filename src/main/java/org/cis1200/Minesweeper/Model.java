@@ -12,15 +12,15 @@ public class Model {
      -2: covered (empty)
      -3: flagged (visible)
      */
-    private int[][] board; // internal state
-    private int[][] visibleBoard; // player's view
+    private Board board; // internal state
+    private Board visibleBoard; // player's view
     /**
      * other variables
      */
     private int numMines; // number of mines
-    private int size; // size of board
+    private int size = 10; // size of board
     private boolean gameActive; // tracks whether game has ended
-    private Stack<int[][]> boardStack; // tracks previous boards for undo
+    private Stack<Board> boardStack; // tracks previous boards for undo
     private boolean firstTurn; // tracks whether first turn to make sure first tile empty
 
     /**
@@ -40,7 +40,7 @@ public class Model {
         // create new board
         if (firstTurn) {
             generateMines(row, col);
-            populateBoard();
+            board.populateBoard();
             firstTurn = false;
         }
         handleTile(row, col, newBoard);
@@ -56,17 +56,16 @@ public class Model {
     public void reset() {
         // set variables
         numMines = 10;
-        size = 10;
         gameActive = true;
         boardStack = new Stack<>();
         firstTurn = true;
         // create boards
-        board = new int[size][size];
-        visibleBoard = new int[size][size];
+        board = new Board(size);
+        visibleBoard = new Board(size);
         // set state of all tiles to covered
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
-                visibleBoard[row][col] = -2;
+                visibleBoard.set(row, col,-2);
             }
         }
     }
@@ -75,23 +74,23 @@ public class Model {
      */
     public void handleTile(int row, int col, boolean newBoard) {
         // check state of tile that was clicked
-        int tile = board[row][col];
-        int visibleTile = visibleBoard[row][col];
+        int tile = board.get(row, col);
+        int visibleTile = visibleBoard.get(row, col);
         // tile already revealed -> do nothing
         if (visibleTile == tile) {
             return;
         }
         // tile is flagged -> remove flag
         else if (visibleTile == -3) {
-            visibleBoard[row][col] = -2;
+            visibleBoard.set(row,col,-2);
             return;
         }
         // add new board to stack
         if (newBoard) {
-            saveBoardToStack();
+            boardStack.push( visibleBoard.getCopy() );
         }
         // tile is covered -> reveal tile
-        visibleBoard[row][col] = tile;
+        visibleBoard.set(row,col,tile);
         // tile is a mine -> end game
         if (tile == -1) {
             gameActive = false;
@@ -119,7 +118,7 @@ public class Model {
             int mineCol = random.nextInt(size);
             if (mineIsValid(mineRow, mineCol, clickedRow, clickedCol, mineCoords)) {
                 mineCoords[i] = 10*mineRow + mineCol;
-                board[mineRow][mineCol] = -1;
+                board.set(mineRow, mineCol, -1);
                 i ++;
             }
         }
@@ -155,46 +154,35 @@ public class Model {
         return true;
     }
 
-    /**
-     *  set up board with mines, all covered
-     */
-    public void populateBoard() {
-        for (int row = 0; row < size; row++) {
-            for (int col = 0; col < size; col++) {
-                // if not a mine, count surrounding mines
-                if (!(board[row][col] == -1)) {
-                    board[row][col] = countSurroundingMines(row, col);
-                }
-            }
-        }
-    }
-
-    /**
-     * count surrounding mines to determine number to be displayed
-     */
-    public int countSurroundingMines(int row, int col) {
-        int count = 0;
-        for (int r = row - 1; r <= row + 1; r++) {
-            for (int c = col - 1; c <= col + 1; c++) {
-                // validate coordinates, if mine found, update count
-                if (!(r < 0 || r >= size || c < 0 || c >= size) && board[r][c] == -1) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
-    /**
-     * store current visible board to allow for undo function
-     */
-    public void saveBoardToStack() {
-        int[][] copy = new int[size][size];
-        for (int i = 0; i < 10; i++) {
-            System.arraycopy(visibleBoard[i], 0, copy[i], 0, 10);
-        }
-        boardStack.push(copy);
-    }
+//    /**
+//     *  set up board with mines, all covered
+//     */
+//    public void populateBoard() {
+//        for (int row = 0; row < size; row++) {
+//            for (int col = 0; col < size; col++) {
+//                // if not a mine, count surrounding mines
+//                if (!(board.get(row,col) == -1)) {
+//                    board.set(row,col,countSurroundingMines(row, col));
+//                }
+//            }
+//        }
+//    }
+//
+//    /**
+//     * count surrounding mines to determine number to be displayed
+//     */
+//    public int countSurroundingMines(int row, int col) {
+//        int count = 0;
+//        for (int r = row - 1; r <= row + 1; r++) {
+//            for (int c = col - 1; c <= col + 1; c++) {
+//                // validate coordinates, if mine found, update count
+//                if (!(r < 0 || r >= size || c < 0 || c >= size) && board.get(r,c) == -1) {
+//                    count++;
+//                }
+//            }
+//        }
+//        return count;
+//    }
 
     /**
      * undoes last move by popping last board saved on stack
@@ -217,9 +205,9 @@ public class Model {
             return;
         }
         // covered tile (-2) -> flag (-3), save old board
-        if (visibleBoard[row][col] == -2) {
-            saveBoardToStack();
-            visibleBoard[row][col] = -3;
+        if (visibleBoard.get(row,col) == -2) {
+            boardStack.push( visibleBoard.getCopy() );
+            visibleBoard.set(row,col,-3);
         }
     }
 
@@ -231,16 +219,15 @@ public class Model {
     public boolean checkWinner() {
         int visible;
         int hidden;
-        for (int row = 0; row < board.length; row++) {
-            for (int col = 0; col < board[row].length; col++) {
-                visible = visibleBoard[row][col];
-                hidden = board[row][col];
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                visible = visibleBoard.get(row,col);
+                hidden = board.get(row,col);
                 if ((hidden != -1) && (visible == -2 || visible == -3)) {
                     return false;
                 }
             }
         }
-        // System.out.println("you win!");
         return true;
     }
 
@@ -260,32 +247,23 @@ public class Model {
         // print coordinate clicked
         System.out.println("you clicked: (" + clickedRow + ", " + clickedCol + ")");
         // print board
-        for (int[] row : model.board) {
-            for (int tile : row) {
-                if (tile == -1) { System.out.print("X "); }
-                else if (tile == 0) { System.out.print("- "); }
-                else { System.out.print(tile + " "); }
-            }
-            System.out.println();
+        model.getBoard().print();
         }
-    }
 
     /**
      * getter methods for testing model
      */
-    public int getTile(int row, int col) { return visibleBoard[row][col]; }
+    public int getTile(int row, int col) { return visibleBoard.get(row,col); }
     public boolean getActive() { return gameActive; }
     public int getStackSize() { return boardStack.size(); }
-    public int[][] getBoard() {
-        int[][] copy = new int[size][size];
-        System.arraycopy(board, 0, copy, 0, size);
-        return copy;
+    public Board getBoard() {
+        return board.getCopy();
     }
     /**
      * setter methods for testing
      */
     public void setFirstTurn(boolean firstTurn) { this.firstTurn = firstTurn; }
-    public void setBoard(int[][] board) { this.board = board; }
+    public void setBoard(Board board) { this.board = board; }
 
 
 }
