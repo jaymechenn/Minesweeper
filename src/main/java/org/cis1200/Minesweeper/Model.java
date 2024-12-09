@@ -21,7 +21,7 @@ public class Model {
     private int size; // size of board
     private boolean gameActive; // tracks whether game has ended
     private Stack<int[][]> boardStack; // tracks previous boards for undo
-    private boolean firstTurn; // checks whether grid has broken
+    private boolean firstTurn; // tracks whether first turn to make sure first tile empty
 
     /**
      * constructor: start game with empty board
@@ -35,7 +35,6 @@ public class Model {
     public void playTurn(int row, int col, boolean newBoard) {
         // validate coordinates and game state
         if (!gameActive || row < 0 || row >= size || col < 0 || col >= size) {
-            // System.out.println("Invalid: (" + row + ", " + col + "), active: " + gameActive);
             return; // end early if game inactive or coordinates out of bounds
         }
         // create new board
@@ -44,37 +43,7 @@ public class Model {
             populateBoard();
             firstTurn = false;
         }
-        // check state of tile that was clicked
-        int tile = board[row][col];
-        int visibleTile = visibleBoard[row][col];
-        // tile already revealed -> do nothing
-        if (visibleTile == tile) {
-            return;
-        }
-        // tile is flagged -> remove flag
-        else if (visibleTile == -3) {
-            // System.out.println("remove flag");
-            visibleBoard[row][col] = -2;
-            return;
-        }
-        // add new board to stack
-        if (newBoard) {
-            saveBoardToStack();
-        }
-        // tile is covered -> reveal tile
-        visibleBoard[row][col] = tile;
-        // tile is a mine -> end game
-        if (tile == -1) {
-            gameActive = false;
-        }
-        // tile has no adjacent mines -> find and uncover all such adjacent tiles
-        if (tile == 0) {
-            for (int r = row - 1; r <= row + 1; r++) {
-                for (int c = col - 1; c <= col + 1; c++) {
-                    playTurn(r, c, false);
-                }
-            }
-        }
+        handleTile(row, col, newBoard);
         // user won -> end game
         if (checkWinner()) {
             gameActive = false;
@@ -98,6 +67,41 @@ public class Model {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
                 visibleBoard[row][col] = -2;
+            }
+        }
+    }
+    /**
+     * handle the tile clicked
+     */
+    public void handleTile(int row, int col, boolean newBoard) {
+        // check state of tile that was clicked
+        int tile = board[row][col];
+        int visibleTile = visibleBoard[row][col];
+        // tile already revealed -> do nothing
+        if (visibleTile == tile) {
+            return;
+        }
+        // tile is flagged -> remove flag
+        else if (visibleTile == -3) {
+            visibleBoard[row][col] = -2;
+            return;
+        }
+        // add new board to stack
+        if (newBoard) {
+            saveBoardToStack();
+        }
+        // tile is covered -> reveal tile
+        visibleBoard[row][col] = tile;
+        // tile is a mine -> end game
+        if (tile == -1) {
+            gameActive = false;
+        }
+        // tile has no adjacent mines -> find and uncover all such adjacent tiles
+        if (tile == 0) {
+            for (int r = row - 1; r <= row + 1; r++) {
+                for (int c = col - 1; c <= col + 1; c++) {
+                    playTurn(r, c, false);
+                }
             }
         }
     }

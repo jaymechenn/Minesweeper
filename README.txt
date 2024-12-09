@@ -11,11 +11,12 @@ PennKey: _______
   is an appropriate use of the concept. Incorporate the feedback you got after
   submitting your proposal.
 
-  1.
+  1. 2D Array: I will use a 2D array to represent the rows and columns (plots) of the board. Each plot has a state:
+  hidden mine, flagged, number, or none. Update the array throughout the game.
 
-  2.
+  2. Collection:
 
-  3.
+  3. Recursion:
 
   4.
 

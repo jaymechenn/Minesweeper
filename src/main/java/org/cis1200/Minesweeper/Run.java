@@ -29,7 +29,7 @@ public class Run implements Runnable {
                 "   Thank you so much! ˚୨୧⋆｡˚ ⋆");
         JScrollPane rulesAreaScrollPane = new JScrollPane(rulesArea);
         rules.add(rulesAreaScrollPane);
-        rules.setSize(500, 160);
+        rules.setSize(500, 150);
         rules.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         rules.setVisible(true);
         // display status

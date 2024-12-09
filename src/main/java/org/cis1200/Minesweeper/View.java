@@ -90,7 +90,7 @@ public class View extends JPanel {
     public void updateStatus() {
         // user wins -> display win message
         if(grid.checkWinner()) {
-            status.setText("You win! Play again :D");
+            status.setText("ₓ˚. ୭ ˚○◦˚ What a beautiful garden! Thank you! ˚◦○˚ ୧ .˚ₓ");
         }
         // user loses -> display lose message
         else if (!grid.getActive()) {
@@ -127,28 +127,34 @@ public class View extends JPanel {
                 int state = grid.getTile(row, col);
                 // empty (no adjacent mines)
                 if (state == 0) {
-                    g.setColor(Color.PINK);
-                    g.fillRect(col*50+1, row*50+1, 48, 48);
-                    g.setColor(Color.WHITE);
                     int teehee = random.nextInt(3);
                     if (teehee == 0) {
-                        g.drawString("❀", col*50+10, row*50+35);
+                        g.setColor(new Color(255,111,105));
+                        g.fillRect(col*50+1, row*50+1, 48, 48);
+                        g.setColor(Color.WHITE);
+                        g.drawString("❀", col*50+12, row*50+35);
                     } else if (teehee == 1) {
-                        g.drawString("❁", col*50+10, row*50+35);
+                        g.setColor(new Color(255,139,130));
+                        g.fillRect(col*50+1, row*50+1, 48, 48);
+                        g.setColor(Color.WHITE);
+                        g.drawString("❁", col*50+12, row*50+35);
                     } else if (teehee == 2) {
-                        g.drawString("✿", col*50+10, row*50+35);
+                        g.setColor(new Color(255,170,165));
+                        g.fillRect(col*50+1, row*50+1, 48, 48);
+                        g.setColor(Color.WHITE);
+                        g.drawString("✿", col*50+12, row*50+35);
                     }
                 }
                 // number
                 else if (state > 0) {
-                    g.setColor(Color.PINK);
+                    g.setColor(new Color(140,213,191));
                     g.fillRect(col*50+1, row*50+1, 48, 48);
                     g.setColor(Color.WHITE);
                     g.drawString(Integer.toString(state), col*50+17, row*50+35);
                 }
                 // flag
                 else if (state == -3) {
-                    g.setColor(Color.PINK);
+                    g.setColor(new Color(255,111,105));
                     g.drawString("❤", col*50+10, row*50+35);
                 }
                 // mine
