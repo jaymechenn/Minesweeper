@@ -46,11 +46,9 @@ public class Model {
         }
         // check state of tile that was clicked
         int tile = board[row][col];
-        // System.out.println(tile);
         int visibleTile = visibleBoard[row][col];
         // tile already revealed -> do nothing
         if (visibleTile == tile) {
-            // System.out.println("tile already revealed");
             return;
         }
         // tile is flagged -> remove flag
@@ -131,6 +129,9 @@ public class Model {
         // store coordinates with row in 10s place column in 1s places
         int mineCoord = 10*mineRow + mineCol;
         int clickedCoord = 10*clickedRow + clickedCol;
+        int[] neighbors = { clickedCoord-10-1, clickedCoord-10, clickedCoord-10+1,
+                clickedCoord-1, clickedCoord+1,
+                clickedCoord+10-1, clickedCoord+10, clickedCoord+10+1 };
         // mine coordinate is clicked coordinate -> invalid
         if (mineCoord == clickedCoord) {
             return false;
@@ -138,6 +139,12 @@ public class Model {
         // mine coordinate already has mine -> invalid
         for (int c : mineCoords) {
             if (c == mineCoord) {
+                return false;
+            }
+        }
+        // mine coordinate is adjacent to clicked coordinate -> invalid
+        for (int n : neighbors) {
+            if (n == mineCoord) {
                 return false;
             }
         }
@@ -179,7 +186,9 @@ public class Model {
      */
     public void saveBoardToStack() {
         int[][] copy = new int[size][size];
-        System.arraycopy(visibleBoard, 0, copy, 0, size);
+        for (int i = 0; i < 10; i++) {
+            System.arraycopy(visibleBoard[i], 0, copy[i], 0, 10);
+        }
         boardStack.push(copy);
     }
 
@@ -187,7 +196,7 @@ public class Model {
      * undoes last move by popping last board saved on stack
      */
     public void undo() {
-        if (!boardStack.isEmpty()) {
+        if (!boardStack.empty()) {
             visibleBoard = boardStack.pop();
             if (!gameActive) {
                 gameActive = true;

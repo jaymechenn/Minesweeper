@@ -11,10 +11,10 @@ public class Run implements Runnable {
     public void run() {
         // top level frame
         final JFrame frame = new JFrame("Minesweeper");
-        frame.setLocation(300, 300);
+        frame.setLocation(500, 300);
         // rules pop up
         final JFrame rules = new JFrame("Welcome to Minesweeper!");
-        rules.setLocation(300, 100);
+        rules.setLocation(500, 90);
         JTextArea rulesArea = new JTextArea();
         rulesArea.setEditable(false);
         rulesArea.setLineWrap(true);
@@ -22,12 +22,12 @@ public class Run implements Runnable {
         rulesArea.setText("  Hey there, welcome to Minesweeper!\n" +
                 "   - Left click a tile to uncover it\n" +
                 "   - Right click to flag a tile that you think is a mine\n" +
-                "   - Uncovered tiles will display how many adjacent tiles are mines" +
+                "   - Uncovered tiles will display how many adjacent tiles are mines\n" +
                 "   - Try to uncover all non-mine tiles\n" +
                 "   You can reset or undo anytime. Good luck! : )");
         JScrollPane rulesAreaScrollPane = new JScrollPane(rulesArea);
         rules.add(rulesAreaScrollPane);
-        rules.setSize(500, 150);
+        rules.setSize(500, 130);
         rules.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         rules.setVisible(true);
         // display status
